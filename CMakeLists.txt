@@ -35,14 +35,18 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# libraries
-# --------------------------------------- #
+add_compile_options(-Wall -Wextra -pedantic)
 
 # executables
 # --------------------------------------- #
-add_executable(cobra src/main.cpp src/Canvas.cpp src/Colors.cpp)
+file(GLOB cobra_src
+    "src/*.cpp"
+)
+add_executable(cobra ${cobra_src})
+
 target_include_directories(cobra PRIVATE include/)
 target_include_directories(cobra PRIVATE glm/)
+
 target_include_directories(cobra PUBLIC ${yamlcpp_SOURCE_DIR}/include)
 target_link_libraries(cobra PRIVATE yaml-cpp)
 
