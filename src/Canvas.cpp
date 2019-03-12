@@ -15,8 +15,8 @@ void Canvas::fill(Color c)
 {
 	auto byte = data.get();
 	auto fill_color = canvas_color(c);
-	for (auto i = 0; i < height; ++i) {
-		for (auto j = 0; j < width; ++j) {
+	for (unsigned i = 0; i < height; ++i) {
+		for (unsigned j = 0; j < width; ++j) {
 			*byte++ = int(fill_color.r);
 			*byte++ = int(fill_color.g);
 			*byte++ = int(fill_color.b);

@@ -11,18 +11,9 @@
 #include <glm/glm.hpp>
 
 #include "Colors.h"
+#include "Point.h"
 
 using data_t = unsigned char;
-using ipair_t = std::pair<int, int>;
-using upair_t = std::pair<unsigned, unsigned>;
-
-struct Point : ipair_t
-{
-    int& x, y;
-    template <class... T> Point(T... t) : ipair_t(t...),
-    	x(ipair_t::first), y(ipair_t::second)
-    {}
-};
 
 class Canvas
 {
@@ -31,6 +22,7 @@ public:
 	static_assert(COLOR_DEPTH-1 <= 
 		std::numeric_limits<data_t>::max());
 	
+	Canvas() : height(0), width(0) {}
 	Canvas(unsigned _height, unsigned _width);
 	void fill(Color c);
 	void paint_pixel(unsigned x, unsigned y, Color c);
@@ -43,9 +35,6 @@ private:
 	unsigned data_len;
 
 	static Color canvas_color(Color c);
-
-	// TODO
-	upair_t get_pixel(Point p) {return upair_t(p.x, 0);}
 };
 
 #endif
