@@ -14,6 +14,7 @@ public:
 	unsigned height, width;
 	Color bg_color;
 	std::vector<Object> objects;
+	Colors palette;
 
 	static constexpr auto DEFAULT_BG = Colors::WHITE;
 	static constexpr auto DEFAULT_LINE = Colors::BLACK;

@@ -24,7 +24,50 @@ void Canvas::fill(Color c)
 	}
 }
 
-void Canvas::paint_line(Point start, Point end, Color c) {
+void Canvas::paint_circle(Point center, unsigned radius, Color c) {
+	int x = 0;
+	int y = radius;
+
+	int d = 1 - radius;
+	auto dl = 3;
+	auto dse = -2*y + 5;
+
+	plot_circle_point(center, x, y, c);
+	while (y > x) {
+		if (d < 0) {
+			d += dl;
+			dse += 2;
+		} else {
+			d += dse;
+			dse += 4;
+			y--;
+		}
+		dl += 2;
+		x++;
+		plot_circle_point(center, x, y, c);
+	}
+}
+
+void Canvas::plot_circle_point(Point center, int x, int y, Color c)
+{
+	paint_point(center.x + x, center.y + y, c);
+	paint_point(center.x + x, center.y - y, c);
+	paint_point(center.x - x, center.y + y, c);
+	paint_point(center.x - x, center.y - y, c);
+
+	paint_point(center.x + y, center.y + x, c);
+	paint_point(center.x + y, center.y - x, c);
+	paint_point(center.x - y, center.y + x, c);
+	paint_point(center.x - y, center.y - x, c);
+}
+
+void Canvas::paint_point(int x, int y, Color c)
+{
+	paint_pixel((height-1) - y, x, c);
+}
+
+void Canvas::paint_line(Point start, Point end, Color c)
+{
 	if (start.x > end.x)
 		std::swap(start, end);
 
@@ -74,6 +117,9 @@ void Canvas::paint_line(Point start, Point end, Color c) {
 
 void Canvas::paint_pixel(unsigned x, unsigned y, Color c) 
 {
+	if (x < 0 or x >= height or y < 0 or y >= width)
+		return;
+
 	auto byte = data.get();
 	byte += 3 * (width * x + y);
 

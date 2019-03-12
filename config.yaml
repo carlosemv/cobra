@@ -1,13 +1,20 @@
 background: white
 height: 100
 width: 100
+colors:
+  - name: magenta
+    rgb: [1.0, 0, 1.0]
+  - name: cyan
+    rgb: [0, 1., 1.]
 objects:
   - name: l1
     type: line
+    color: magenta
     start: [0, 50]
     end: [99, 99]
   - name: l2
     type: line
+    color: cyan
     start: [0, 50]
     end: [99, 0]
   - name: red_line
@@ -30,6 +37,12 @@ objects:
     color: mid_gray
     start: [80, 40]
     end: [80, 60]
+  - type: polyline
+    points: [[20, 40], [25, 60], [30, 40], [35, 60], [40, 40]]
+  - type: circle
+    color: mid_gray
+    center: [50, 50]
+    radius: 20
 
 
 

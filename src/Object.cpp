@@ -11,3 +11,7 @@ const std::map<std::string, ObjectType> Object::type_names = {
 Object::Object(std::string _tn, std::initializer_list<Point> _p) :
 	type_name(_tn), type(type_names.at(_tn)), points(_p)
 {}
+
+Object::Object(std::string _tn, std::vector<Point> _v) :
+	type_name(_tn), type(type_names.at(_tn)), points(_v)
+{}

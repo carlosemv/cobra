@@ -23,11 +23,13 @@ class Object
 public:
 	Object() : type(ObjectType::Invalid) {}
 	Object(std::string _tn, std::initializer_list<Point> _p);
+	Object(std::string _tn, std::vector<Point> _v);
 
 	std::string type_name;
 	ObjectType type;
 	std::vector<Point> points;
 	Color line_color;
+	std::optional<unsigned> radius;
 	std::optional<Color> fill_color;
 	std::optional<std::string> name;
 
