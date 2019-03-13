@@ -18,6 +18,7 @@ public:
 
 	static constexpr auto DEFAULT_BG = Colors::WHITE;
 	static constexpr auto DEFAULT_LINE = Colors::BLACK;
+	static constexpr auto DEFAULT_FILL = DEFAULT_LINE;
 };
 
 #endif

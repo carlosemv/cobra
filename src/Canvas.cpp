@@ -97,7 +97,7 @@ void Canvas::paint_line(Point start, Point end, Color c)
 
 	auto x = start.x;
 	auto y = start.y;
-	paint_pixel((height-1) - y, x, c);
+	paint_point(x, y, c);
 
 	for (auto p = 1; p <= dx; ++p) {
 		if (pk < 0) {
@@ -111,13 +111,46 @@ void Canvas::paint_line(Point start, Point end, Color c)
 			x += x_inc;
 			pk += i1;
 		}
-		paint_pixel((height-1) - y, x, c);
+		paint_point(x, y, c);
 	}
+}
+
+void Canvas::flood_fill(Point flood, Color fill, Color old)
+{
+	if (fill == old)
+		return;
+	flood_fill((height-1) - flood.y, flood.x, fill, old);
+}
+
+void Canvas::flood_fill(int x, int y, Color fill, Color old)
+{
+	std::queue<ipair_t> pixels;
+	pixels.push({x, y});
+
+	while (not pixels.empty()) {
+		auto [x, y] = pixels.front();
+
+		if (valid_pixel(x, y) and pixel_is_color(x, y, old)) {
+			paint_pixel(x, y, fill);
+
+			pixels.push({x+1, y});
+			pixels.push({x, y+1});
+			pixels.push({x-1, y});
+			pixels.push({x, y-1});
+		}
+
+		pixels.pop();
+	}
+}
+
+bool Canvas::valid_pixel(int x, int y) const
+{
+	return (x >= 0 and x < (int)height and y >= 0 and y < (int)width);
 }
 
 void Canvas::paint_pixel(unsigned x, unsigned y, Color c) 
 {
-	if (x < 0 or x >= height or y < 0 or y >= width)
+	if (not valid_pixel(x, y))
 		return;
 
 	auto byte = data.get();
@@ -127,6 +160,20 @@ void Canvas::paint_pixel(unsigned x, unsigned y, Color c)
 	*byte++ = int(fill_color.r);
 	*byte++ = int(fill_color.g);
 	*byte = int(fill_color.b);
+}
+
+bool Canvas::pixel_is_color(int x, int y, Color c) const
+{
+	if (not valid_pixel(x, y))
+		return false;
+
+	auto byte = data.get();
+	byte += 3 * (width * x + y);
+
+	auto fill_color = canvas_color(c);
+	return (*byte++ == int(fill_color.r)
+		and *byte++ == int(fill_color.g)
+		and *byte == int(fill_color.b));
 }
 
 void Canvas::write_png(std::string file_name) const
