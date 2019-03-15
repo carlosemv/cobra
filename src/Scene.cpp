@@ -13,6 +13,12 @@ Scene::Scene(std::string config_file)
 		palette.add_color(name, {value[0], value[1], value[2]});
 	}
 
+	for (auto point : config["points"]) {
+		auto name = point[0].as<std::string>();
+		auto value = point[1].as<ipair_t>();
+		points[name] = value;
+	}
+
 	if (config["background"]) {
 		auto bg = config["background"].as<std::string>();
 		this->bg_color = palette.from_string(bg);
@@ -28,8 +34,8 @@ Scene::Scene(std::string config_file)
 		switch (type) {
 			case ObjectType::Line:
 			{
-				auto start = node["start"].as<ipair_t>();
-				auto end = node["end"].as<ipair_t>();
+				auto start = get_point(node["start"]);
+				auto end = get_point(node["end"]);
 				obj = Object(type_name, {start, end});
 				break;
 			}
@@ -37,7 +43,7 @@ Scene::Scene(std::string config_file)
 			{
 				std::vector<Point> points;
 				for (auto p : node["points"])
-					points.push_back(p.as<ipair_t>());
+					points.push_back(get_point(p));
 				obj = Object(type_name, points);
 				break;
 			}
@@ -45,24 +51,51 @@ Scene::Scene(std::string config_file)
 			{
 				std::vector<Point> points;
 				for (auto p : node["points"])
-					points.push_back(p.as<ipair_t>());
+					points.push_back(get_point(p));
 				points.push_back(points.front());
 				obj = Object(type_name, points);
 				break;
 			}
 			case ObjectType::Circle:
 			{
-				auto center = node["center"].as<ipair_t>();
+				auto center = get_point(node["center"]);
 				auto radius = node["radius"].as<int>();
 				obj = Object(type_name, {center});
 				obj.radius = radius;
 				break;
 			}
+			case ObjectType::Rect:
+			{
+				auto c = get_point(node["corner"]);
+				auto width = node["width"].as<int>();
+				auto height = node["height"].as<int>();
+
+				std::vector<Point> points = {
+					{c.x, c.y},
+					{c.x+width, c.y},
+					{c.x+width, c.y-height},
+					{c.x, c.y-height},
+					{c.x, c.y}
+				};
+				obj = Object(type_name, points);
+
+				break;
+			}
 			default:
-				std::cout << "unexpected type!\n"; break;
+				std::cerr << "unexpected type " <<
+					type_name << std::endl;
 		}
 
 		std::cout << obj.type_name << std::endl;
+
+		if (obj.is_polygon()) {
+			obj.edges = std::list<Edge>();
+			auto point = obj.points.begin();
+			for (; point+1 != obj.points.end(); ++point) {
+				Edge e(*point, *(point+1));
+				obj.edges.value().push_back(e);
+			}
+		}
 
 		if (node["color"]) {
 			auto lcolor = node["color"].as<std::string>();
@@ -92,10 +125,10 @@ Scene::Scene(std::string config_file)
 				if (node["flood_points"][0].IsSequence()) {
 					std::vector<Point> points;
 					for (auto p : node["flood_points"])
-						points.push_back(p.as<ipair_t>());
+						points.push_back(get_point(p));
 					obj.flood_points = points;
 				} else {
-					auto point = node["flood_points"].as<ipair_t>();
+					auto point = get_point(node["flood_points"]);
 					obj.flood_points = {point};
 				}
 			}
@@ -106,5 +139,16 @@ Scene::Scene(std::string config_file)
 		}
 
 		this->objects.push_back(obj);
+	}
+}
+
+Point Scene::get_point(YAML::Node node) const
+{
+	try {
+		auto value = node.as<ipair_t>();
+		return value;
+	} catch (const YAML::BadConversion& e) {
+		auto name = node.as<std::string>();
+		return points.at(name);
 	}
 }

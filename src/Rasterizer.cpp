@@ -6,6 +6,14 @@ void Rasterizer::rasterize()
 	canvas.fill(scene.bg_color);
 
 	for (auto obj : scene.objects) {
+		if (obj.is_polygon() and obj.fill) {
+			if (obj.fill == FillMethod::Scanline) {
+				std::cout << "filling with Scanline\n";
+				canvas.scanline_fill(obj.edges.value(),
+					obj.fill_color.value());
+			}
+		}
+
 		switch (obj.type) {
 			case ObjectType::Line:
 			{
@@ -15,6 +23,7 @@ void Rasterizer::rasterize()
 			}
 			case ObjectType::Polyline:
 			case ObjectType::Polygon:
+			case ObjectType::Rect:
 			{
 				auto point = obj.points.begin();
 				for (; point+1 != obj.points.end(); ++point) {
@@ -33,16 +42,21 @@ void Rasterizer::rasterize()
 		}
 
 		if (obj.is_closed() and obj.fill) {
-			std::cout << "filling";
 			if (obj.fill == FillMethod::Flood) {
-				std::cout << " with flood_points: ";
+				std::cout << "filling with flood_points: ";
 				for (auto p : *obj.flood_points) {
 					std::cout << p << ", ";
 					canvas.flood_fill(p, obj.fill_color.value(),
 						scene.bg_color);
 				}
+				std::cout << std::endl;
 			}
-			std::cout << std::endl;
 		}
 	}
+}
+
+void Rasterizer::load_conf(std::string _f)
+{
+	YAML::Node config = YAML::LoadFile(_f);
+	this->out_file = config["out_file"].as<std::string>();
 }

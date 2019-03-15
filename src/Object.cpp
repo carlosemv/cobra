@@ -21,13 +21,28 @@ Object::Object(std::string _tn, std::vector<Point> _v) :
 	type_name(_tn), type(type_names.at(_tn)), points(_v)
 {}
 
-bool Object::is_closed()
+bool Object::is_closed() const
 {
 	switch (type) {
 		case ObjectType::Polygon:
 		case ObjectType::Circle:
 		case ObjectType::Rect:
 			return true;
+		case ObjectType::Line:
+		case ObjectType::Polyline:
+		case ObjectType::Invalid:
+		default:
+			return false;
+	}
+}
+
+bool Object::is_polygon() const
+{
+	switch (type) {
+		case ObjectType::Polygon:
+		case ObjectType::Rect:
+			return true;
+		case ObjectType::Circle:
 		case ObjectType::Line:
 		case ObjectType::Polyline:
 		case ObjectType::Invalid:

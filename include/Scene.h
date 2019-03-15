@@ -4,6 +4,7 @@
 #include <iostream>
 #include "yaml-cpp/yaml.h"
 #include "Object.h"
+#include "Edge.h"
 
 class Scene
 {
@@ -14,11 +15,16 @@ public:
 	unsigned height, width;
 	Color bg_color;
 	std::vector<Object> objects;
-	Colors palette;
 
 	static constexpr auto DEFAULT_BG = Colors::WHITE;
 	static constexpr auto DEFAULT_LINE = Colors::BLACK;
 	static constexpr auto DEFAULT_FILL = DEFAULT_LINE;
+
+private:
+	Colors palette;
+	std::map<std::string, Point> points;
+
+	Point get_point(YAML::Node node) const;
 };
 
 #endif

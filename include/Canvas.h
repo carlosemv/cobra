@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <limits>
 #include <queue>
+#include <list>
 
 #define GLM_FORCE_PURE // disable SIMD optimizations 
 // based on compiler intrinsics, enable C++14 constexpr
@@ -13,6 +14,7 @@
 
 #include "Colors.h"
 #include "Point.h"
+#include "Edge.h"
 
 using data_t = unsigned char;
 
@@ -28,6 +30,7 @@ public:
 	void fill(Color c);
 	void paint_line(Point start, Point end, Color c);
 	void paint_circle(Point center, unsigned radius, Color c);
+	void scanline_fill(std::list<Edge> edges, Color c);
 	void flood_fill(Point flood, Color fill, Color old);
 	void write_png(std::string file_name) const;
 
@@ -40,6 +43,7 @@ private:
 	void flood_fill(int x, int y, Color fill, Color old);
 	bool pixel_is_color(int x, int y, Color c) const;
 	void plot_circle_point(Point center, int x, int y, Color c);
+	void paint_scanline(int y, int x0, int x1, Color c);
 	void paint_point(int x, int y, Color c);
 	void paint_pixel(unsigned x, unsigned y, Color c);
 

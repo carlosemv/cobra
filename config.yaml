@@ -1,3 +1,4 @@
+out_file: ../imgs/i0.png
 background: white
 height: 100
 width: 100
@@ -6,6 +7,8 @@ colors:
     rgb: [1.0, 0, 1.0]
   - name: cyan
     rgb: [0, 1., 1.]
+points:
+  - ["center", [50, 50]]
 objects:
   - name: l1
     type: line
@@ -41,12 +44,19 @@ objects:
     points: [[20, 40], [25, 60], [30, 40], [35, 60], [40, 40]]
   - type: polygon
     fill_color: magenta
-    flood_points: [15, 10]
     points: [[0, 0], [25, 10], [10, 40]]
+  - type: polygon
+    color: red
+    fill_color: black
+    points: [[80, 10], [88, 30], [94, 12]]
   - type: circle
     color: mid_gray
-    center: [50, 50]
+    center: center
     radius: 20
-
-
+  - type: rect
+    corner: [50, 20]
+    height: 15
+    width: 5
+    color: blue
+    fill_color: black
 

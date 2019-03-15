@@ -143,6 +143,44 @@ void Canvas::flood_fill(int x, int y, Color fill, Color old)
 	}
 }
 
+void Canvas::scanline_fill(std::list<Edge> edges, Color c)
+{
+	edges.sort(Edge::et_compare);
+
+	auto y = edges.front().y_min;
+	std::list<Edge> aet;
+	while (not aet.empty() or not edges.empty()) {
+		while (edges.front().y_min == y) {
+			if (edges.front().inv_m.second != 0)
+				aet.push_back(edges.front());
+			edges.pop_front();
+		}
+
+		aet.remove_if([y](Edge e){ return e.y_max == y; });
+
+		aet.sort([](Edge& e1, Edge& e2){ return e1.x_min < e2.x_min; });
+       
+		if (aet.size() % 2 == 0) {
+			for (auto e = aet.begin(); e != aet.end(); std::advance(e, 2))
+        		paint_scanline(y, e->x_min, std::next(e)->x_min, c);
+		}
+
+		y++;
+		for (auto& e : aet) {
+			e.x_min += (e.inv_m.first + e.x_remain) / e.inv_m.second;
+			e.x_remain += e.inv_m.first % e.inv_m.second;
+			e.x_remain %= e.inv_m.second;
+		}
+	}
+}
+
+void Canvas::paint_scanline(int y, int x0, int x1, Color c)
+{
+	for (auto i = x0+1; i < x1; ++i) {
+		paint_point(i, y, c);
+	}
+}
+
 bool Canvas::valid_pixel(int x, int y) const
 {
 	return (x >= 0 and x < (int)height and y >= 0 and y < (int)width);
