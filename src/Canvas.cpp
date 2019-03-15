@@ -223,3 +223,32 @@ Color Canvas::canvas_color(Color c)
 {
 	return (COLOR_DEPTH - 0.01F) * c;
 }
+
+Color Canvas::normal_color(Color c)
+{
+	return c / (COLOR_DEPTH - 0.01F);
+}
+
+void Canvas::antialias(std::vector<int> kernel, unsigned dim)
+{
+	if (kernel.size() != dim*dim or dim % 2 == 0) {
+		std::cerr << "Invalid dimension " << dim;
+		std::cerr << " for provided kernel\n";
+		return;
+	}
+
+	std::vector<Point> offsets;
+	for (unsigned p = 0; p < dim*dim; ++p) {
+		auto i = p / dim;
+		auto j = p % dim;
+
+		auto diff = Point(i, j) - Point(dim/2, dim/2);
+		offsets.push_back({diff.x, diff.y});
+	}
+
+	for (unsigned i = 0; i < height; ++i) {
+		for (unsigned j = 0; j < width; ++j) {
+
+		}
+	}
+}

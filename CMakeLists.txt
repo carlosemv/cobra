@@ -46,7 +46,8 @@ file(GLOB cobra_src
 add_executable(cobra ${cobra_src})
 
 target_include_directories(cobra PRIVATE include/)
-target_include_directories(cobra PRIVATE glm/)
+target_include_directories(cobra PRIVATE external/glm)
+target_include_directories(cobra PRIVATE external/stb)
 
 target_include_directories(cobra PUBLIC ${yamlcpp_SOURCE_DIR}/include)
 target_link_libraries(cobra PRIVATE yaml-cpp)

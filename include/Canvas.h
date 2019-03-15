@@ -33,6 +33,7 @@ public:
 	void scanline_fill(std::list<Edge> edges, Color c);
 	void flood_fill(Point flood, Color fill, Color old);
 	void write_png(std::string file_name) const;
+	void antialias(std::vector<int> kernel, unsigned dim);
 
 private:
 	unsigned height, width;
@@ -48,6 +49,7 @@ private:
 	void paint_pixel(unsigned x, unsigned y, Color c);
 
 	static Color canvas_color(Color c);
+	static Color normal_color(Color c);
 };
 
 #endif

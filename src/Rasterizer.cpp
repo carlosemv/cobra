@@ -53,6 +53,9 @@ void Rasterizer::rasterize()
 			}
 		}
 	}
+
+	std::vector<int> gaussian = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+	canvas.antialias(gaussian, 3);
 }
 
 void Rasterizer::load_conf(std::string _f)
