@@ -115,11 +115,13 @@ void Canvas::paint_line(Point start, Point end, Color c)
 	}
 }
 
-void Canvas::flood_fill(Point flood, Color fill, Color old)
+void Canvas::flood_fill(Point flood, Color fill)
 {
+	auto flood_pixel = Point((height-1) - flood.y, flood.x);
+	Color old = get_color(flood_pixel.x, flood_pixel.y);
 	if (fill == old)
 		return;
-	flood_fill((height-1) - flood.y, flood.x, fill, old);
+	flood_fill(flood_pixel.x, flood_pixel.y, fill, old);
 }
 
 void Canvas::flood_fill(int x, int y, Color fill, Color old)
@@ -150,7 +152,7 @@ void Canvas::scanline_fill(std::list<Edge> edges, Color c)
 	auto y = edges.front().y_min;
 	std::list<Edge> aet;
 	while (not aet.empty() or not edges.empty()) {
-		while (edges.front().y_min == y) {
+		while (not edges.empty() and edges.front().y_min == y) {
 			if (edges.front().inv_m.second != 0)
 				aet.push_back(edges.front());
 			edges.pop_front();

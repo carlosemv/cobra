@@ -31,7 +31,7 @@ public:
 	void paint_line(Point start, Point end, Color c);
 	void paint_circle(Point center, unsigned radius, Color c);
 	void scanline_fill(std::list<Edge> edges, Color c);
-	void flood_fill(Point flood, Color fill, Color old);
+	void flood_fill(Point flood, Color fill);
 	void write_png(std::string file_name) const;
 	void antialias(std::vector<int> kernel, unsigned dim);
 
