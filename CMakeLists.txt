@@ -6,7 +6,7 @@ include(FetchContent)
 
 # general configs
 # --------------------------------------- #
-set(YAML_CPP_BUILD_TESTS CACHE BOOL OFF)
+# set(YAML_CPP_BUILD_TESTS CACHE BOOL OFF)
 
 # dependencies
 # --------------------------------------- #
