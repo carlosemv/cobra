@@ -51,14 +51,14 @@ void Canvas::paint_circle(Point center, unsigned radius, Color c) {
 void Canvas::plot_circle_point(Point center, int x, int y, Color c)
 {
 	paint_point(center.x + x, center.y + y, c);
-	paint_point(center.x + x, center.y - y, c);
-	paint_point(center.x - x, center.y + y, c);
-	paint_point(center.x - x, center.y - y, c);
-
 	paint_point(center.x + y, center.y + x, c);
 	paint_point(center.x + y, center.y - x, c);
-	paint_point(center.x - y, center.y + x, c);
+	paint_point(center.x + x, center.y - y, c);
+	
+	paint_point(center.x - x, center.y - y, c);
 	paint_point(center.x - y, center.y - x, c);
+	paint_point(center.x - y, center.y + x, c);
+	paint_point(center.x - x, center.y + y, c);
 }
 
 void Canvas::paint_point(int x, int y, Color c)
