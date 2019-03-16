@@ -58,7 +58,6 @@ void Rasterizer::rasterize()
 void Rasterizer::load_conf(std::string _f)
 {
 	YAML::Node config = YAML::LoadFile(_f);
-	this->out_file = config["out_file"].as<std::string>();
 	if (config["antialiasing"])
 		this->antialiasing = config["antialiasing"].as<bool>();
 	else
