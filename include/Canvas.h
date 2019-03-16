@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <algorithm>
+#include <functional>
 #include <limits>
 #include <queue>
 #include <list>
@@ -30,6 +31,7 @@ public:
 	void fill(Color c);
 	void paint_line(Point start, Point end, Color c);
 	void paint_circle(Point center, unsigned radius, Color c);
+	void paint_arc(Point center, unsigned radius, Color c, Arc arc);
 	void scanline_fill(std::list<Edge> edges, Color c);
 	void flood_fill(Point flood, Color fill);
 	void write_png(std::string file_name) const;
@@ -44,7 +46,10 @@ private:
 	void flood_fill(int x, int y, Color fill, Color old);
 	Color get_color(int x, int y) const;
 	bool pixel_is_color(int x, int y, Color c) const;
-	void plot_circle_point(Point center, int x, int y, Color c);
+	void plot_arc(Point center, unsigned radius, Color c, Arc arc,
+		std::function<void(Point, int, int, Color, Arc)> plot_func);
+	void plot_circle_point(Point center, int x, int y, Color c, Arc arc);
+	void plot_arc_point(Point center, int x, int y, Color c, Arc arc);
 	void paint_scanline(int y, int x0, int x1, Color c);
 	void paint_point(int x, int y, Color c);
 	void paint_pixel(unsigned x, unsigned y, Color c);

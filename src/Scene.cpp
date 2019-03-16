@@ -62,6 +62,16 @@ Scene::Scene(std::string config_file)
 				obj.radius = radius;
 				break;
 			}
+			case ObjectType::Arc:
+			{
+				auto center = get_point(node["center"]);
+				auto arc = get_arc(node["center"]);
+				auto radius = node["radius"].as<int>();
+				obj = Object(type_name, {center});
+				obj.radius = radius;
+				obj.arc = arc;
+				break;
+			}
 			case ObjectType::Rect:
 			{
 				auto c = get_point(node["corner"]);
@@ -138,6 +148,26 @@ Point Scene::get_point(YAML::Node node) const
 		auto name = node.as<std::string>();
 		return points.at(name);
 	}
+}
+
+Point Scene::get_arc(YAML::Node node) const
+{
+	Arc arc;
+	try {
+		arc = Arc(node.as<ipair_t>());
+	} catch (const YAML::BadConversion& e) {
+		auto name = node.as<std::string>();
+		arc = arcs.at(name);
+	}
+
+	if (arc.x < 0 or arc.x > 1 or arc.y < 0 or arc.y > 1) {
+		std::cerr << "Invalid arc " << arc.x << ", " << arc.y;
+		arc = Arc(0, 1);
+		std::cerr << "; using " << arc.x << ", " << arc.y;
+		std::cerr << " instead\n";
+	}
+
+	return arc;
 }
 
 Color Scene::get_color(YAML::Node node) const

@@ -15,8 +15,9 @@ enum class ObjectType {
 	Line,
 	Polyline,
 	Polygon,
-	Circle,
 	Rect,
+	Circle,
+	Arc,
 	Invalid
 };
 
@@ -38,7 +39,9 @@ public:
 	ObjectType type;
 	std::vector<Point> points;
 	Color line_color;
+
 	std::optional<unsigned> radius;
+	std::optional<Arc> arc;
 
 	std::optional<std::list<Edge>> edges;
 	std::optional<FillMethod> fill;

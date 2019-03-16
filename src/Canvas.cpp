@@ -24,7 +24,32 @@ void Canvas::fill(Color c)
 	}
 }
 
-void Canvas::paint_circle(Point center, unsigned radius, Color c) {
+void Canvas::paint_arc(Point center, unsigned radius, Color c, Arc arc)
+{
+	plot_arc(center, radius, c, arc, 
+		std::bind(&Canvas::plot_arc_point, this,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4,
+			std::placeholders::_5));
+}
+
+void Canvas::paint_circle(Point center, unsigned radius, Color c)
+{
+	Arc arc = {0, 1};
+	plot_arc(center, radius, c, arc, 
+		std::bind(&Canvas::plot_circle_point, this,
+			std::placeholders::_1,
+			std::placeholders::_2,
+			std::placeholders::_3,
+			std::placeholders::_4,
+			std::placeholders::_5));
+}
+
+void Canvas::plot_arc(Point center, unsigned radius, Color c, Arc arc,
+	std::function<void(Point, int, int, Color, Arc)> plot_func)
+{
 	int x = 0;
 	int y = radius;
 
@@ -32,7 +57,7 @@ void Canvas::paint_circle(Point center, unsigned radius, Color c) {
 	auto dl = 3;
 	auto dse = -2*y + 5;
 
-	plot_circle_point(center, x, y, c);
+	plot_func(center, x, y, c, arc);
 	while (y > x) {
 		if (d < 0) {
 			d += dl;
@@ -44,11 +69,24 @@ void Canvas::paint_circle(Point center, unsigned radius, Color c) {
 		}
 		dl += 2;
 		x++;
-		plot_circle_point(center, x, y, c);
+		plot_func(center, x, y, c, arc);
 	}
 }
 
-void Canvas::plot_circle_point(Point center, int x, int y, Color c)
+void Canvas::plot_circle_point(Point center, int x, int y, Color c, Arc arc)
+{
+	paint_point(center.x + x, center.y + y, c);
+	paint_point(center.x + y, center.y + x, c);
+	paint_point(center.x + y, center.y - x, c);
+	paint_point(center.x + x, center.y - y, c);
+	
+	paint_point(center.x - x, center.y - y, c);
+	paint_point(center.x - y, center.y - x, c);
+	paint_point(center.x - y, center.y + x, c);
+	paint_point(center.x - x, center.y + y, c);
+}
+
+void Canvas::plot_arc_point(Point center, int x, int y, Color c, Arc arc)
 {
 	paint_point(center.x + x, center.y + y, c);
 	paint_point(center.x + y, center.y + x, c);

@@ -23,9 +23,11 @@ public:
 private:
 	Colors palette;
 	std::map<std::string, Point> points;
+	std::map<std::string, Point> arcs;
 
 	Point get_point(YAML::Node node) const;
 	Color get_color(YAML::Node node) const;
+	Point get_arc(YAML::Node node) const;
 };
 
 #endif

@@ -20,4 +20,6 @@ struct Point : glm::ivec2
 	}
 };
 
+using Arc = Point;
+
 #endif
