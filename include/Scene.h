@@ -25,6 +25,7 @@ private:
 	std::map<std::string, Point> points;
 
 	Point get_point(YAML::Node node) const;
+	Color get_color(YAML::Node node) const;
 };
 
 #endif

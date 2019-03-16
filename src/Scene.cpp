@@ -19,12 +19,10 @@ Scene::Scene(std::string config_file)
 		points[name] = value;
 	}
 
-	if (config["background"]) {
-		auto bg = config["background"].as<std::string>();
-		this->bg_color = palette.from_string(bg);
-	} else {
+	if (config["background"])
+		this->bg_color = get_color(config["background"]);
+	else
 		this->bg_color = Scene::DEFAULT_BG;
-	}
 
 	for (auto node : config["objects"]) {
 		auto type_name = node["type"].as<std::string>();
@@ -95,20 +93,16 @@ Scene::Scene(std::string config_file)
 			}
 		}
 
-		if (node["color"]) {
-			auto lcolor = node["color"].as<std::string>();
-			obj.line_color = palette.from_string(lcolor);
-		} else {
+		if (node["color"])
+			obj.line_color = get_color(node["color"]);
+		else
 			obj.line_color = Scene::DEFAULT_LINE;
-		}
 
 		if (node["fill"] or node["fill_color"] or node["flood_points"]) {
-			if (node["fill_color"]) {
-				auto fcolor = node["fill_color"].as<std::string>();
-				obj.fill_color = palette.from_string(fcolor);
-			} else {
+			if (node["fill_color"])
+				obj.fill_color = get_color(node["fill_color"]);
+			else
 				obj.fill_color = Scene::DEFAULT_FILL;
-			}
 
 			if (node["fill"]) {
 				auto fill_n = node["fill"].as<std::string>();
@@ -143,5 +137,16 @@ Point Scene::get_point(YAML::Node node) const
 	} catch (const YAML::BadConversion& e) {
 		auto name = node.as<std::string>();
 		return points.at(name);
+	}
+}
+
+Color Scene::get_color(YAML::Node node) const
+{
+	try {
+		auto value = node.as<std::array<double, 3>>();
+		return {value[0], value[1], value[2]};
+	} catch (const YAML::BadConversion& e) {
+		auto name = node.as<std::string>();
+		return palette.from_string(name);
 	}
 }
