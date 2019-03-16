@@ -43,8 +43,7 @@ void Rasterizer::rasterize()
 		if (obj.is_closed() and obj.fill) {
 			if (obj.fill == FillMethod::Flood) {
 				for (auto p : *obj.flood_points) {
-					canvas.flood_fill(p, obj.fill_color.value(),
-						scene.bg_color);
+					canvas.flood_fill(p, obj.fill_color.value());
 				}
 			}
 		}
