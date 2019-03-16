@@ -120,15 +120,10 @@ Scene::Scene(std::string config_file)
 			}
 
 			if (obj.fill == FillMethod::Flood) {
-				if (node["flood_points"][0].IsSequence()) {
-					std::vector<Point> points;
-					for (auto p : node["flood_points"])
-						points.push_back(get_point(p));
-					obj.flood_points = points;
-				} else {
-					auto point = get_point(node["flood_points"]);
-					obj.flood_points = {point};
-				}
+				std::vector<Point> points;
+				for (auto p : node["flood_points"])
+					points.push_back(get_point(p));
+				obj.flood_points = points;
 			}
 		}
 
