@@ -118,7 +118,7 @@ void Canvas::paint_line(Point start, Point end, Color c)
 void Canvas::flood_fill(Point flood, Color fill)
 {
 	auto flood_pixel = Point((height-1) - flood.y, flood.x);
-	Color old = get_color(flood_pixel.x, flood_pixel.y);
+	Color old = normal_color(get_color(flood_pixel.x, flood_pixel.y));
 	if (fill == old)
 		return;
 	flood_fill(flood_pixel.x, flood_pixel.y, fill, old);
@@ -238,12 +238,12 @@ void Canvas::write_png(std::string file_name) const
 
 Color Canvas::canvas_color(Color c)
 {
-	return (COLOR_DEPTH - 0.01F) * c;
+	return (COLOR_DEPTH - 1.F) * c;
 }
 
 Color Canvas::normal_color(Color c)
 {
-	return c / (COLOR_DEPTH - 0.01F);
+	return c / (COLOR_DEPTH - 1.F);
 }
 
 bool Canvas::valid_color(Color c)
