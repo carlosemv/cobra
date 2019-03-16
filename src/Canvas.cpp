@@ -284,7 +284,7 @@ void Canvas::antialias(std::vector<int> kernel, unsigned dim)
 				}
 			}
 
-			c /= 16;
+			c /= normal;
 			if (valid_color(c)) {
 				auto fill_color = canvas_color(c);
 				*byte++ = int(fill_color.r);

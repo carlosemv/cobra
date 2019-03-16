@@ -86,8 +86,6 @@ Scene::Scene(std::string config_file)
 					type_name << std::endl;
 		}
 
-		std::cout << obj.type_name << std::endl;
-
 		if (obj.is_polygon()) {
 			obj.edges = std::list<Edge>();
 			auto point = obj.points.begin();

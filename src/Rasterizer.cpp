@@ -8,7 +8,6 @@ void Rasterizer::rasterize()
 	for (auto obj : scene.objects) {
 		if (obj.is_polygon() and obj.fill) {
 			if (obj.fill == FillMethod::Scanline) {
-				std::cout << "filling with Scanline\n";
 				canvas.scanline_fill(obj.edges.value(),
 					obj.fill_color.value());
 			}
@@ -38,18 +37,15 @@ void Rasterizer::rasterize()
 				break;
 			}
 			default:
-				std::cout << obj.type_name << " not rasterized\n";
+				std::cerr << obj.type_name << " not rasterized\n";
 		}
 
 		if (obj.is_closed() and obj.fill) {
 			if (obj.fill == FillMethod::Flood) {
-				std::cout << "filling with flood_points: ";
 				for (auto p : *obj.flood_points) {
-					std::cout << p << ", ";
 					canvas.flood_fill(p, obj.fill_color.value(),
 						scene.bg_color);
 				}
-				std::cout << std::endl;
 			}
 		}
 	}
