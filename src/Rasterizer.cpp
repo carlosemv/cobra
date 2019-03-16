@@ -54,12 +54,15 @@ void Rasterizer::rasterize()
 		}
 	}
 
-	std::vector<int> gaussian = {1, 2, 1, 2, 4, 2, 1, 2, 1};
-	canvas.antialias(gaussian, 3);
+	if (antialiasing) {
+		std::vector<int> gaussian = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+		canvas.antialias(gaussian, 3);
+	}
 }
 
 void Rasterizer::load_conf(std::string _f)
 {
 	YAML::Node config = YAML::LoadFile(_f);
 	this->out_file = config["out_file"].as<std::string>();
+	this->antialiasing = config["antialiasing"].as<bool>();
 }

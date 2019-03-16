@@ -17,6 +17,7 @@ private:
 	Scene scene;
 	Canvas canvas;
 	std::string out_file;
+	bool antialiasing;
 
 	void load_conf(std::string _f);
 };

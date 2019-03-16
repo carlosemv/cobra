@@ -200,6 +200,21 @@ void Canvas::paint_pixel(unsigned x, unsigned y, Color c)
 	*byte = int(fill_color.b);
 }
 
+Color Canvas::get_color(int x, int y) const
+{
+	if (not valid_pixel(x, y))
+		return {0, 0, 0};
+
+	auto byte = data.get();
+	byte += 3 * (width * x + y);
+
+	Color c;
+	c.r = *byte++;
+	c.g = *byte++;
+	c.b = *byte;
+	return c;
+}
+
 bool Canvas::pixel_is_color(int x, int y, Color c) const
 {
 	if (not valid_pixel(x, y))
@@ -229,6 +244,13 @@ Color Canvas::normal_color(Color c)
 	return c / (COLOR_DEPTH - 0.01F);
 }
 
+bool Canvas::valid_color(Color c)
+{
+	return (c.r >= 0 and c.r <= 1 
+		and c.g >= 0 and c.g <= 1
+		and c.b >= 0 and c.b <= 1);
+}
+
 void Canvas::antialias(std::vector<int> kernel, unsigned dim)
 {
 	if (kernel.size() != dim*dim or dim % 2 == 0) {
@@ -246,9 +268,34 @@ void Canvas::antialias(std::vector<int> kernel, unsigned dim)
 		offsets.push_back({diff.x, diff.y});
 	}
 
+	auto new_canvas = std::make_unique<data_t[]>(data_len);
+	std::copy(data.get(), data.get()+data_len, new_canvas.get());
+	auto byte = new_canvas.get();
 	for (unsigned i = 0; i < height; ++i) {
 		for (unsigned j = 0; j < width; ++j) {
+			float normal = 0;
+			Color c = {0, 0, 0};
+			for (size_t p = 0; p < kernel.size(); ++p) {
+				auto curr_point = Point(i, j) + offsets[p];
+				if (valid_pixel(curr_point.x, curr_point.y)) {
+					normal += kernel[p];
+					auto curr_color = normal_color(get_color(curr_point.x, curr_point.y));
+					c += curr_color * float(kernel[p]);
+				}
+			}
 
+			c /= 16;
+			if (valid_color(c)) {
+				auto fill_color = canvas_color(c);
+				*byte++ = int(fill_color.r);
+				*byte++ = int(fill_color.g);
+				*byte++ = int(fill_color.b);
+			} else {
+				byte += 3;
+			}
 		}
 	}
+
+	std::copy(new_canvas.get(), new_canvas.get()+data_len, data.get());
 }
+

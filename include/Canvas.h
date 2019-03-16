@@ -42,6 +42,7 @@ private:
 
 	bool valid_pixel(int x, int y) const;
 	void flood_fill(int x, int y, Color fill, Color old);
+	Color get_color(int x, int y) const;
 	bool pixel_is_color(int x, int y, Color c) const;
 	void plot_circle_point(Point center, int x, int y, Color c);
 	void paint_scanline(int y, int x0, int x1, Color c);
@@ -50,6 +51,7 @@ private:
 
 	static Color canvas_color(Color c);
 	static Color normal_color(Color c);
+	static bool valid_color(Color c);
 };
 
 #endif

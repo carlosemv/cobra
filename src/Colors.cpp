@@ -1,6 +1,11 @@
 #include <iostream>
 #include "Colors.h"
 
+std::ostream& operator<<(std::ostream& out, const Color& c)
+{
+	return out << "[" << c.r << ", " << c.g << ", " << c.b << "]";
+}
+
 std::map<std::string, Color> Colors::values = {
     {"white", Colors::WHITE},
     {"black", Colors::BLACK},

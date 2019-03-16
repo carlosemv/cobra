@@ -8,6 +8,8 @@
 
 using Color = glm::vec3;
 
+std::ostream& operator<<(std::ostream& out, const Color& c);
+
 class Colors
 {
 public:
