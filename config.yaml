@@ -4,9 +4,9 @@ width: 200
 antialiasing: false
 colors:
   - name: magenta
-    rgb: [1.0, 0, 1.0]
+    value: [1.0, 0, 1.0]
   - name: cyan
-    rgb: [0, 1., 1.]
+    value: [0, 1., 1.]
 points:
   - ["center", [50, 50]]
 objects:

@@ -288,22 +288,36 @@ void Scene::load_fill(YAML::Node& node, Object& obj) const
 void Scene::load_collections(YAML::Node config)
 {
 	for (auto color : config["colors"]) {
-		auto name = color["name"].as<std::string>();
-		auto value = color["rgb"].as<std::array<double, 3>>();
+		std::string name;
+		std::array<double, 3> value;
 
-		palette.add_color(name, {value[0], value[1], value[2]});
+		auto elem = get_element<decltype(value)>(color, "color");
+		if (elem) {
+			std::tie(name, value) = elem.value();
+			palette.add_color(name, {value[0], value[1], value[2]});
+		}
 	}
 
 	for (auto point : config["points"]) {
-		auto name = point[0].template as<std::string>();
-		auto value = point[1].template as<ipair_t>();
-		points[name] = value;
+		std::string name;
+		ipair_t value;
+
+		auto elem = get_element<decltype(value)>(point, "point");
+		if (elem) {
+			std::tie(name, value) = elem.value();
+			points[name] = Point(value);
+		}
 	}
 
 	for (auto arc : config["arcs"]) {
-		auto name = arc[0].template as<std::string>();
-		auto value = arc[1].template as<ipair_t>();
-		arcs[name] = value;
+		std::string name;
+		dpair_t value;
+
+		auto elem = get_element<decltype(value)>(arc, "arc");
+		if (elem) {
+			std::tie(name, value) = elem.value();
+			arcs[name] = Arc(value);
+		}
 	}
 }
 
