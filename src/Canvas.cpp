@@ -73,7 +73,7 @@ void Canvas::plot_arc(Point center, unsigned radius, Color c, Arc arc,
 	}
 }
 
-void Canvas::plot_circle_point(Point center, int x, int y, Color c, Arc arc)
+void Canvas::plot_circle_point(Point center, int x, int y, Color c, [[maybe_unused]] Arc arc)
 {
 	paint_point(center.x + x, center.y + y, c);
 	paint_point(center.x + y, center.y + x, c);
@@ -88,15 +88,37 @@ void Canvas::plot_circle_point(Point center, int x, int y, Color c, Arc arc)
 
 void Canvas::plot_arc_point(Point center, int x, int y, Color c, Arc arc)
 {
-	paint_point(center.x + x, center.y + y, c);
-	paint_point(center.x + y, center.y + x, c);
-	paint_point(center.x + y, center.y - x, c);
-	paint_point(center.x + x, center.y - y, c);
-	
-	paint_point(center.x - x, center.y - y, c);
-	paint_point(center.x - y, center.y - x, c);
-	paint_point(center.x - y, center.y + x, c);
-	paint_point(center.x - x, center.y + y, c);
+	for (auto xs : {-1, 1}) {
+		for (auto ys: {-1, 1}) {
+			for (auto flip : {true, false}) {
+				auto i = center.x;
+				auto j = center.y;
+
+				if (flip) {
+					i += xs * y;
+					j += ys * x;
+				} else {
+					i += xs * x;
+					j += ys * y;
+				}
+
+				auto rad = std::atan2(j - center.y, i - center.x);
+				rad = (rad + Canvas::PI) / Canvas::TAU;
+				rad = std::fmod(rad + .5, 1.0);
+
+				if (arc.x <= arc.y) {
+					if (rad >= arc.x and rad <= arc.y) {
+						paint_point(i, j, c);
+					}
+				} else {
+					if ((rad >= arc.x and rad <= 1)
+						or (rad >= 0 and rad <= arc.y)) {
+						paint_point(i, j, c);
+					}
+				}
+			}
+		}
+	}
 }
 
 void Canvas::paint_point(int x, int y, Color c)
@@ -199,10 +221,10 @@ void Canvas::scanline_fill(std::list<Edge> edges, Color c)
 		aet.remove_if([y](Edge e){ return e.y_max == y; });
 
 		aet.sort([](Edge& e1, Edge& e2){ return e1.x_min < e2.x_min; });
-       
+
 		if (aet.size() % 2 == 0) {
 			for (auto e = aet.begin(); e != aet.end(); std::advance(e, 2))
-        		paint_scanline(y, e->x_min, std::next(e)->x_min, c);
+				paint_scanline(y, e->x_min, std::next(e)->x_min, c);
 		}
 
 		y++;

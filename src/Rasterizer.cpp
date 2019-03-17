@@ -36,6 +36,12 @@ void Rasterizer::rasterize()
 					obj.line_color);
 				break;
 			}
+			case ObjectType::Arc:
+			{
+				canvas.paint_arc(obj.points[0], obj.radius.value(),
+					obj.line_color, obj.arc.value());
+				break;
+			}
 			default:
 				std::cerr << obj.type_name << " not rasterized\n";
 		}

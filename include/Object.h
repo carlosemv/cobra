@@ -9,6 +9,7 @@
 
 #include "Point.h"
 #include "Edge.h"
+#include "Arc.h"
 #include "Colors.h"
 
 enum class ObjectType {

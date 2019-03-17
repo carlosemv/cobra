@@ -1,7 +1,7 @@
-out_file: ../imgs/i0.png
 background: white
-height: 100
-width: 100
+height: 200
+width: 200
+antialiasing: false
 colors:
   - name: magenta
     rgb: [1.0, 0, 1.0]
@@ -52,11 +52,14 @@ objects:
   - type: circle
     color: mid_gray
     center: center
-    radius: 20
+    radius: 26
   - type: rect
     corner: [50, 20]
     height: 15
     width: 5
     color: blue
     fill_color: black
-
+  - type: arc
+    center: [100, 100]
+    radius: 30
+    arc: [0.75, 0.25]

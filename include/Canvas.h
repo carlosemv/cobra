@@ -16,6 +16,7 @@
 #include "Colors.h"
 #include "Point.h"
 #include "Edge.h"
+#include "Arc.h"
 
 using data_t = unsigned char;
 
@@ -57,6 +58,9 @@ private:
 	static Color canvas_color(Color c);
 	static Color normal_color(Color c);
 	static bool valid_color(Color c);
+
+	static constexpr double PI = 3.141592653589;
+	static constexpr double TAU = 2 * PI;
 };
 
 #endif

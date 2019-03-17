@@ -16,10 +16,8 @@ struct Point : glm::ivec2
 
 	inline friend std::ostream& operator<<(std::ostream& out, const Point& p)
 	{
-		return out << "[" << p.x << ", " << p.y << "]";
+		return out << "(" << p.x << ", " << p.y << ")";
 	}
 };
-
-using Arc = Point;
 
 #endif

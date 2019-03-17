@@ -3,102 +3,38 @@
 Scene::Scene(std::string config_file)
 {
 	YAML::Node config = YAML::LoadFile(config_file);
-	this->height = config["height"].as<int>();
-	this->width = config["width"].as<int>();
+	height = config["height"].as<int>();
+	width = config["width"].as<int>();
 
-	for (auto color : config["colors"]) {
-		auto name = color["name"].as<std::string>();
-		auto value = color["rgb"].as<std::array<double, 3>>();
-
-		palette.add_color(name, {value[0], value[1], value[2]});
-	}
-
-	for (auto point : config["points"]) {
-		auto name = point[0].as<std::string>();
-		auto value = point[1].as<ipair_t>();
-		points[name] = value;
-	}
+	load_collections(config);
 
 	if (config["background"])
-		this->bg_color = get_color(config["background"]);
+		bg_color = get_color(config["background"]);
 	else
-		this->bg_color = Scene::DEFAULT_BG;
+		bg_color = Scene::DEFAULT_BG;
 
 	for (auto node : config["objects"]) {
-		auto type_name = node["type"].as<std::string>();
-		ObjectType type;
-		try {
-			type = Object::type_names.at(type_name);
-		} catch (std::out_of_range) {
-			std::cerr << "Invalid object type " << type_name
-				<< "; ignoring object.\n";
+		std::string type_name;
+		auto o_type_name = get_value<std::string>(node, "type");
+		if (o_type_name) {
+			type_name = o_type_name.value();
+		} else {
+			std::cerr << "Missing type; ignoring object.\n";
 			continue;
 		}
 
+		auto obj_name = get_value<std::string>(node, "name");
+
 		Object obj;
-		switch (type) {
-			case ObjectType::Line:
-			{
-				auto start = get_point(node["start"]);
-				auto end = get_point(node["end"]);
-				obj = Object(type_name, {start, end});
-				break;
-			}
-			case ObjectType::Polyline:
-			{
-				std::vector<Point> points;
-				for (auto p : node["points"])
-					points.push_back(get_point(p));
-				obj = Object(type_name, points);
-				break;
-			}
-			case ObjectType::Polygon:
-			{
-				std::vector<Point> points;
-				for (auto p : node["points"])
-					points.push_back(get_point(p));
-				points.push_back(points.front());
-				obj = Object(type_name, points);
-				break;
-			}
-			case ObjectType::Circle:
-			{
-				auto center = get_point(node["center"]);
-				auto radius = node["radius"].as<int>();
-				obj = Object(type_name, {center});
-				obj.radius = radius;
-				break;
-			}
-			case ObjectType::Arc:
-			{
-				auto center = get_point(node["center"]);
-				auto arc = get_arc(node["center"]);
-				auto radius = node["radius"].as<int>();
-				obj = Object(type_name, {center});
-				obj.radius = radius;
-				obj.arc = arc;
-				break;
-			}
-			case ObjectType::Rect:
-			{
-				auto c = get_point(node["corner"]);
-				auto width = node["width"].as<int>();
-				auto height = node["height"].as<int>();
+		auto o_obj = make_object(node, type_name, obj_name);
+		if (o_obj) {
+			obj = o_obj.value();
+		} else {
+			continue;
+		}
 
-				std::vector<Point> points = {
-					{c.x, c.y},
-					{c.x+width, c.y},
-					{c.x+width, c.y-height},
-					{c.x, c.y-height},
-					{c.x, c.y}
-				};
-				obj = Object(type_name, points);
-
-				break;
-			}
-			default:
-				std::cerr << "unexpected type " <<
-					type_name << std::endl;
+		if (node["name"]) {
+			obj.name = node["name"].as<std::string>();
 		}
 
 		if (obj.is_polygon()) {
@@ -110,40 +46,158 @@ Scene::Scene(std::string config_file)
 			}
 		}
 
-		if (node["color"])
+		if (node["color"]) {
 			obj.line_color = get_color(node["color"]);
-		else
+		} else {
 			obj.line_color = Scene::DEFAULT_LINE;
-
-		if (node["fill"] or node["fill_color"] or node["flood_points"]) {
-			if (node["fill_color"])
-				obj.fill_color = get_color(node["fill_color"]);
-			else
-				obj.fill_color = Scene::DEFAULT_FILL;
-
-			if (node["fill"]) {
-				auto fill_n = node["fill"].as<std::string>();
-				obj.fill = Object::fill_names.at(fill_n);
-			} else if (node["flood_points"]) {
-				obj.fill = FillMethod::Flood;
-			} else {
-				obj.fill = FillMethod::Scanline;
-			}
-
-			if (obj.fill == FillMethod::Flood) {
-				std::vector<Point> points;
-				for (auto p : node["flood_points"])
-					points.push_back(get_point(p));
-				obj.flood_points = points;
-			}
 		}
 
-		if (node["name"]) {
-			obj.name = node["name"].as<std::string>();
-		}
+		load_fill(node, obj);
 
 		this->objects.push_back(obj);
 	}
+}
+
+
+std::optional<Object> Scene::make_object(YAML::Node& node, std::string type_name,
+	std::optional<std::string> obj_name) const
+{
+	ObjectType type;
+	try {
+		type = Object::type_names.at(type_name);
+	} catch (const std::out_of_range& e) {
+		std::cerr << "Invalid object type " << type_name
+			<< "; ignoring object.\n";
+		return std::nullopt;
+	}
+
+	Object obj;
+	switch (type) {
+		case ObjectType::Line:
+		{
+			auto start = get_point(node["start"]);
+			auto end = get_point(node["end"]);
+			obj = Object(type_name, {start, end});
+			break;
+		}
+		case ObjectType::Polyline:
+		{
+			std::vector<Point> points;
+			for (auto p : node["points"])
+				points.push_back(get_point(p));
+			obj = Object(type_name, points);
+			break;
+		}
+		case ObjectType::Polygon:
+		{
+			std::vector<Point> points;
+			for (auto p : node["points"])
+				points.push_back(get_point(p));
+			points.push_back(points.front());
+			obj = Object(type_name, points);
+			break;
+		}
+		case ObjectType::Circle:
+		{
+			auto circle = make_circle(node, type_name, obj_name);
+			if (circle)
+				obj = circle.value();
+			else
+				return std::nullopt;
+			break;
+		}
+		case ObjectType::Arc:
+		{
+			auto arc = make_arc(node, type_name, obj_name);
+			if (arc)
+				obj = arc.value();
+			else
+				return std::nullopt;
+			break;
+		}
+		case ObjectType::Rect:
+		{
+			auto rect = make_rect(node, type_name, obj_name);
+			if (rect)
+				obj = rect.value();
+			else
+				return std::nullopt;
+			break;
+		}
+		default:
+		{
+			std::cerr << "unexpected type " <<
+				type_name << "; ignoring object.\n";
+			return std::nullopt;
+		}
+	}
+
+	return obj;
+}
+
+
+std::optional<Object> Scene::make_circle(YAML::Node& node, std::string type_name,
+	std::optional<std::string> obj_name) const
+{
+	Object obj;
+
+	auto center = get_point(node["center"]);
+	obj = Object(type_name, {center});
+
+	auto radius = get_value<int>(node, "radius");
+	if (radius) {
+		obj.radius = radius.value();
+	} else {
+		std::cerr << invalid_value_err("radius",
+			obj_name, type_name);
+		return std::nullopt;
+	}
+
+	return obj;
+}
+
+std::optional<Object> Scene::make_arc(YAML::Node& node, std::string type_name,
+	std::optional<std::string> obj_name) const
+{
+	auto obj = make_circle(node, type_name, obj_name);
+	if (obj)
+		obj.value().arc = get_arc(node["arc"]);
+	return obj;
+}
+
+std::optional<Object> Scene::make_rect(YAML::Node& node, std::string type_name,
+	std::optional<std::string> obj_name) const
+{
+	auto c = get_point(node["corner"]);
+	int width, height;
+
+	auto o_width = get_value<int>(node, "width");
+	if (not o_width) {
+		std::cerr << invalid_value_err("width",
+			obj_name, type_name);
+		return std::nullopt;
+	} else {
+		width = o_width.value();
+	}
+
+	auto o_height = get_value<int>(node, "height");
+	if (not o_height) {
+		std::cerr << invalid_value_err("height",
+			obj_name, type_name);
+		return std::nullopt;
+	} else {
+		height = o_height.value();
+	}
+
+	std::vector<Point> points = {
+		{c.x, c.y},
+		{c.x+width, c.y},
+		{c.x+width, c.y-height},
+		{c.x, c.y-height},
+		{c.x, c.y}
+	};
+
+	return Object(type_name, points);
 }
 
 Point Scene::get_point(YAML::Node node) const
@@ -157,11 +211,11 @@ Point Scene::get_point(YAML::Node node) const
 	}
 }
 
-Point Scene::get_arc(YAML::Node node) const
+Arc Scene::get_arc(YAML::Node node) const
 {
 	Arc arc;
 	try {
-		arc = Arc(node.as<ipair_t>());
+		arc = Arc(node.as<dpair_t>());
 	} catch (const YAML::BadConversion& e) {
 		auto name = node.as<std::string>();
 		arc = arcs.at(name);
@@ -171,7 +225,7 @@ Point Scene::get_arc(YAML::Node node) const
 		std::cerr << "Invalid arc " << arc.x << ", " << arc.y;
 		arc = Arc(0, 1);
 		std::cerr << "; using " << arc.x << ", " << arc.y
-			<< " instead\n";
+			<< " instead.\n";
 	}
 
 	return arc;
@@ -186,4 +240,83 @@ Color Scene::get_color(YAML::Node node) const
 		auto name = node.as<std::string>();
 		return palette.from_string(name);
 	}
+}
+
+void Scene::load_fill(YAML::Node& node, Object& obj) const
+{
+	if (node["fill"] or node["fill_color"] or node["flood_points"]) {
+		if (node["fill_color"]) {
+			obj.fill_color = get_color(node["fill_color"]);
+		} else {
+			obj.fill_color = Scene::DEFAULT_FILL;
+		}
+
+		if (node["fill"]) {
+			auto fill_n = node["fill"].as<std::string>();
+			try {
+				obj.fill = Object::fill_names.at(fill_n);
+			} catch (const std::out_of_range& e) {
+				obj.fill = std::nullopt;
+				std::cerr << "Invalid fill method "
+					<< fill_n << "; ";
+			}
+		} else if (node["flood_points"]) {
+			obj.fill = FillMethod::Flood;
+		} else {
+			obj.fill = FillMethod::Scanline;
+		}
+
+		if (obj.fill == FillMethod::Flood) {
+			std::vector<Point> points;
+			for (auto p : node["flood_points"])
+				points.push_back(get_point(p));
+			obj.flood_points = points;
+		}
+
+		if (not obj.fill) {
+			std::cerr << "not filling ";
+			if (obj.name) {
+				std::cerr << "object \"" << obj.name.value()
+					<< "\".\n";
+			} else {
+				std::cerr << obj.type_name << " object\n";
+			}
+		}
+	}
+}
+
+void Scene::load_collections(YAML::Node config)
+{
+	for (auto color : config["colors"]) {
+		auto name = color["name"].as<std::string>();
+		auto value = color["rgb"].as<std::array<double, 3>>();
+
+		palette.add_color(name, {value[0], value[1], value[2]});
+	}
+
+	for (auto point : config["points"]) {
+		auto name = point[0].template as<std::string>();
+		auto value = point[1].template as<ipair_t>();
+		points[name] = value;
+	}
+
+	for (auto arc : config["arcs"]) {
+		auto name = arc[0].template as<std::string>();
+		auto value = arc[1].template as<ipair_t>();
+		arcs[name] = value;
+	}
+}
+
+
+const std::string Scene::invalid_value_err(std::string field,
+	std::optional<std::string> obj_name, std::string type_name)
+{
+	std::string err;
+	err += "Invalid or missing " + field + " value; ";
+	if (obj_name) {
+		err += "ignoring object \"" + obj_name.value() + "\".\n";
+	} else {
+		err += "ignoring " + type_name + " object.\n";
+	}
+	return err;
 }
