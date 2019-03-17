@@ -6,6 +6,7 @@ const std::map<std::string, ObjectType> Object::type_names = {
 	{"polygon", ObjectType::Polygon},
 	{"circle", ObjectType::Circle},
 	{"rect", ObjectType::Rect},
+	{"arc", ObjectType::Arc}
 };
 
 const std::map<std::string, FillMethod> Object::fill_names = {
