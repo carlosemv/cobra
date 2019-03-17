@@ -26,10 +26,11 @@ Scene::Scene(std::string config_file)
 
 	for (auto node : config["objects"]) {
 		auto type_name = node["type"].as<std::string>();
+		ObjectType type;
 		try {
-			auto type = Object::type_names.at(type_name);
+			type = Object::type_names.at(type_name);
 		} catch (std::out_of_range) {
-			std::cerr << "Invalid object type " << type_name;
+			std::cerr << "Invalid object type " << type_name
 				<< "; ignoring object.\n";
 			continue;
 		}
@@ -169,8 +170,8 @@ Point Scene::get_arc(YAML::Node node) const
 	if (arc.x < 0 or arc.x > 1 or arc.y < 0 or arc.y > 1) {
 		std::cerr << "Invalid arc " << arc.x << ", " << arc.y;
 		arc = Arc(0, 1);
-		std::cerr << "; using " << arc.x << ", " << arc.y;
-		std::cerr << " instead\n";
+		std::cerr << "; using " << arc.x << ", " << arc.y
+			<< " instead\n";
 	}
 
 	return arc;
