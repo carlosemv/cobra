@@ -206,19 +206,33 @@ Point Scene::get_point(YAML::Node node) const
 		auto value = node.as<ipair_t>();
 		return value;
 	} catch (const YAML::BadConversion& e) {
+		Point point = {0, 0};
 		auto name = node.as<std::string>();
-		return points.at(name);
+		try {
+			point = points.at(name);
+		} catch (const std::out_of_range& e) {
+			std::cerr << "Unkown point " << name
+				<< "; replacing with " << point
+				<< "\n";
+		}
+		return point;
 	}
 }
 
 Arc Scene::get_arc(YAML::Node node) const
 {
-	Arc arc;
+	Arc arc = {0, 1};
 	try {
 		arc = Arc(node.as<dpair_t>());
 	} catch (const YAML::BadConversion& e) {
 		auto name = node.as<std::string>();
-		arc = arcs.at(name);
+		try {
+			arc = arcs.at(name);
+		} catch (const std::out_of_range& e) {
+			std::cerr << "Unkown arc " << name
+				<< "; replacing with " << arc
+				<< "\n";
+		}
 	}
 
 	if (arc.x < 0 or arc.x > 1 or arc.y < 0 or arc.y > 1) {
@@ -237,8 +251,17 @@ Color Scene::get_color(YAML::Node node) const
 		auto value = node.as<std::array<double, 3>>();
 		return {value[0], value[1], value[2]};
 	} catch (const YAML::BadConversion& e) {
+		Color c = DEFAULT_LINE;
 		auto name = node.as<std::string>();
-		return palette.from_string(name);
+		try {
+			c = palette.from_string(name);
+		} catch (const std::out_of_range& e) {
+			std::cerr << "Unkown color " << name
+				<< "; replacing with " << c
+				<< "\n";
+		}
+
+		return c;
 	}
 }
 
