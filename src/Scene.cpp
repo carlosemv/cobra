@@ -26,7 +26,13 @@ Scene::Scene(std::string config_file)
 
 	for (auto node : config["objects"]) {
 		auto type_name = node["type"].as<std::string>();
-		auto type = Object::type_names.at(type_name);
+		try {
+			auto type = Object::type_names.at(type_name);
+		} catch (std::out_of_range) {
+			std::cerr << "Invalid object type " << type_name;
+				<< "; ignoring object.\n";
+			continue;
+		}
 
 		Object obj;
 		switch (type) {
