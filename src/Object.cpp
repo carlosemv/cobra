@@ -28,9 +28,6 @@ bool Object::is_closed() const
 		case ObjectType::Circle:
 		case ObjectType::Rect:
 			return true;
-		case ObjectType::Line:
-		case ObjectType::Polyline:
-		case ObjectType::Invalid:
 		default:
 			return false;
 	}
@@ -42,10 +39,6 @@ bool Object::is_polygon() const
 		case ObjectType::Polygon:
 		case ObjectType::Rect:
 			return true;
-		case ObjectType::Circle:
-		case ObjectType::Line:
-		case ObjectType::Polyline:
-		case ObjectType::Invalid:
 		default:
 			return false;
 	}
