@@ -114,7 +114,8 @@ Note that if "fill" is not defined, scanline will be assumed, unless "flood_poin
 
 ### <a name="desc-example"></a> Description example
 Below is a simple but complete example of a scene description, which produces the image above it.
-![simple](examples/simple/simple.png)
+
+<img src="https://github.com/carlosemv/cobra/raw/master/examples/simple/simple.png" width="300">
 
 ```yaml
 background: white
