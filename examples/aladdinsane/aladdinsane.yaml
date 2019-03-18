@@ -1,0 +1,111 @@
+background: pink
+height: 600
+width: 600
+colors:
+  - name: blue
+    value: [.09, .45, .74]
+  - name: red
+    value: [.9, 0, .21]
+  - name: green
+    value: [.45, .59, .48]
+  - name: pink
+    value: [1, .9, .95]
+points:
+  - [lcenter, [200, 330]]
+  - [rcenter, [400, 330]]
+arcs:
+  - [upper_lid, [0.09375, 0.40625]]
+  - [lower_lid, [0.59375, 0.90625]]
+variables:
+  - type: integer
+    name: eye_r
+    value: 40
+  - [integer, iris_r, 20]
+objects:
+  - name: blue-back
+    type: polygon
+    color: blue
+    fill_color: blue
+    points: [[90, 20], [180, 280], [80, 220], [260, 580],
+      [460, 580], [260, 320], [380, 390]]
+  - name: red-front
+    type: polygon
+    color: black
+    fill_color: red
+    points: [[90, 20], [200, 280], [80, 220], [280, 580],
+      [460, 580], [260, 320], [380, 390]]
+
+  - name: leye
+    type: circle
+    color: white
+    fill_color: white
+    flood_points: [lcenter]
+    center: lcenter
+    radius: eye_r
+  - name: reye
+    type: circle
+    color: white
+    fill_color: white
+    flood_points: [rcenter]
+    center: rcenter
+    radius: eye_r
+
+  - name: liris
+    type: circle
+    color: green
+    fill_color: green
+    flood_points: [lcenter]
+    center: lcenter
+    radius: iris_r
+  - name: riris
+    type: circle
+    color: green
+    fill_color: green
+    flood_points: [rcenter]
+    center: rcenter
+    radius: iris_r
+
+  - name: lpupil
+    type: circle
+    color: black
+    fill_color: black
+    flood_points: [lcenter]
+    center: lcenter
+    radius: 10
+  - name: rpupil
+    type: circle
+    color: black
+    fill_color: black
+    flood_points: [rcenter]
+    center: rcenter
+    radius: 14
+
+  - name: lu-lid
+    type: arc
+    center: lcenter
+    arc: upper_lid
+    radius: eye_r
+    color: black
+  - name: ll-lid
+    type: arc
+    center: lcenter
+    arc: lower_lid
+    radius: eye_r
+    color: black
+  - name: ru-lid
+    type: arc
+    center: rcenter
+    arc: upper_lid
+    radius: eye_r
+    color: black
+  - name: rl-lid
+    type: arc
+    center: rcenter
+    arc: lower_lid
+    radius: eye_r
+    color: black
+
+
+
+
+

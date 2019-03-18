@@ -1,0 +1,87 @@
+background: white
+height: 100
+width: 100
+antialiasing: false
+colors:
+  - name: magenta
+    value: [1.0, 0, 1.0]
+  - name: cyan
+    value: [0, 1., 1.]
+points:
+  - [center, [50, 50]]
+  - [bar_bottom, [80, 40]]
+arcs:
+  - [lquarter, [0.375, 0.625]]
+  - [rquarter, [0.875, 0.125]]
+variables:
+  - type: integer
+    name: arcs_r
+    value: 15
+  - [integer, t_top, 25]
+objects:
+  - name: l1
+    type: line
+    color: magenta
+    start: [0, 50]
+    end: [99, 99]
+  - name: l2
+    type: line
+    color: cyan
+    start: [0, 50]
+    end: [99, 0]
+  - name: red_line
+    type: line
+    color: red
+    start: [50, 50]
+    end: [30, 99]
+  - name: green_line
+    type: line
+    color: green
+    start: [50, 50]
+    end: [30, 0]
+  - name: blue_line
+    type: line
+    color: blue
+    start: [50, 50]
+    end: [99, 50]
+  - name: gray_bar
+    type: line
+    start: bar_bottom
+    end: [80, 60]
+
+
+  - type: polyline
+    points: [[90, 15], [80, 20], [90, 25], 
+      [80, 30], [90, 35], bar_bottom]
+
+
+  - type: circle
+    color: mid_gray
+    center: center
+    radius: 26
+
+  - type: arc
+    center: center
+    radius: arcs_r
+    arc: lquarter
+  - type: arc
+    center: center
+    radius: arcs_r
+    arc: rquarter
+
+  - type: rect
+    corner: [12, t_top]
+    height: 20
+    width: 7
+    color: blue
+    fill_color: black
+  - type: polygon
+    color: red
+    fill_color: black
+    points: [[25, 5], [25, t_top], [40, 15]]
+
+  - type: circle
+    center: [35, 90]
+    radius: 8
+    flood_points: [[30, 90], [40, 90]]
+    fill_color: mid_gray
