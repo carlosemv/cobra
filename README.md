@@ -40,8 +40,8 @@ Scene descriptions are written in YAML. Below is a brief guide on how to do so.
 But first, we define some type descriptors: (I) means integer, (N) non-negative integer, (S) string, and (R) a real number between 0 and 1 (inclusive). [x] stands for the same type as (x), but means the corresponding value is optional. <x, x, ...> stands for a list with elements of type x. An optional list would be represented as [<x, x, ...>].
 
 The "root" of the description can have the following fields (note that the first two are necessary):
-* height: (N), defines scene height
-* width: (N), defines scene width
+* height: (N), defines scene height (in pixels)
+* width: (N), defines scene width (in pixels)
 * background: [S] or <R, R, R>, defines background color (see *color* below in *collections*)
 
 ### Collections
