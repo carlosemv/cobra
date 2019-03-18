@@ -3,15 +3,15 @@ COmmon Bidimentional RAsterizer (COBRA) - A simple 2D rasterizer implemented in 
 
 ## Table of Contents
 + [1. Main features](#features)
-+ [2. Examples](#examples)
-+ [3. Build](#build)
-+ [4. Run](#run)
-+ [5. Scene description](#description)
-+ [5.1. Collections](#collections)
-+ [5.2. Objects](#objects)
-+ [5.2.1. Object types](#obj-types)
-+ [5.2.2. Filling](#filling)
-+ [5.3. Description example](#desc-example)
++ [2. Build](#build)
++ [3. Run](#run)
++ [4. Scene description](#description)
++ [4.1. Collections](#collections)
++ [4.2. Objects](#objects)
++ [4.2.1. Object types](#obj-types)
++ [4.2.2. Filling](#filling)
++ [4.3. Description example](#desc-example)
++ [5. Examples](#examples)
 + [6. (Possible) future features](#future)
 + [7. Acknowledgements and licensing](#licensing)
 
@@ -28,8 +28,6 @@ COmmon Bidimentional RAsterizer (COBRA) - A simple 2D rasterizer implemented in 
     * [x] Points
     * [x] Arcs
     * [x] Variables (integers, floats)
-    
-## <a name="examples"></a> Examples
     
 ## <a name="build"></a> Build
 After cloning/downloading the repository, and navigating to it, do:
@@ -205,6 +203,13 @@ objects:
     fill_color: mid_gray
 ```
 
+## <a name="examples"></a> Examples
+[Aladdinsane](/examples/aladdinsane/):<br>
+![bowie](/examples/aladdinsane/aladdinsane.png)
+
+[Iristar](/examples/iristar/):<br>
+![iris](/examples/iristar/iristar.png)
+
 ## <a name="future"></a> (Possible) future features:
 Besides those unmarked on main features, we could have:
 * Thickness parameter for lines
@@ -219,4 +224,4 @@ Besides those unmarked on main features, we could have:
 ## <a name="licensing"></a> Acknowledgements and licensing
 Two libraries were used in this project and are included in this repository:
 * [STB image writing library](https://github.com/nothings/stb "STB libraries"), a single-file public domain (or MIT licensed) library used here for writing png images.
-* [OpenGL mathematics library](https://glm.g-truc.net "OpenGL Mathematics"), a header only mathematics library for graphics software. Only its vector classes and associated operations are used in this project, for (computational) efficiency. Its source code and documentation are licensed under the [Happy Bunny License (Modified MIT) or the MIT License](external/glm/manual.md#section0)
+* [OpenGL mathematics library](https://glm.g-truc.net "OpenGL Mathematics"), a header only mathematics library for graphics software. Only its vector classes and associated operations are used in this project, for (computational) efficiency. Its source code and documentation are licensed under the [Happy Bunny License (Modified MIT) or the MIT License](external/glm/manual.md#section0).
