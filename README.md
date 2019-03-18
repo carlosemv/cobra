@@ -90,10 +90,15 @@ More fields are defines depending on the object's type.
 There are six basic objects, and these are their types and specific fields:
 
 A **line** defines a line between the points "start" and "end" (<N, N> or (S) each, see *point* above, in *collections*)).
+
 A **polyline** defines multiple connected line segments, usually for open shapes. For this it must have a "points" field, a list in which each element is a point (again, <N, N> or (S)). Each point on that list is connected to the next, up until the second-to-last one.
+
 A **polygon** is similar to a polyline, and also has a "points" field, the difference being that the last point is also connected to the first, defining a closed shape. Therefore, it also can be *filled* (see *filling* below).
+
 A **rect** is a rectangle, which is just a specific type of polygon, defined by its "corner" (point representing its upper left corner), "width" (N) and "height" (N).
+
 A **circle** is exactly what it sounds like, and is defined by a "radius" (N), and by its "center" (a point, so <N, N> or (S)). It can also be filled, although not by all methods.
+
 An **arc** is similar to a circle, in that it also has center and radius fields. But, it must also have an "arc" field (<R, R> or (S)), defining its arc, or range over the full circle (see *arc* above, in *collections*).
 
 
