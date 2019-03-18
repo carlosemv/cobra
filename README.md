@@ -70,7 +70,7 @@ The collections are:
 (i) a list with two elements, the first being the name (S), and the second the corresponding value (<R, R, R>, <N, N>, and <R, R>, respectively); or
 (ii) a map, with keys "name" and "value" mapped to the values described in (i).
 
-A **color**'s value is defined as a list <R, R, R>, representing proportions for red, greed, and blue, respectively. Meaning, for an implementation with color depth of 256 (for example), a color <0, 0.5, 1.0> would be mapped to a RGB value of <0, 128, 255>. Some default colors may be already defined by the implementation.
+A **color**'s value is defined as a list <R, R, R>, representing proportions for red, greed, and blue, respectively. Meaning, for an implementation with color depth of 256 (for example), a color <0, 0.5, 1.0> would be mapped to an RGB value of <0, 128, 255>. Some default colors may be already defined by the implementation.
 
 A **point**'s value is defined as a list <N, N>. If we name these values respectively x and y, x gives the horizontal (rightwards) distance of that point from the origin, and y the vertical (upwards) distance. The origin is located in the lower left corner of the scene.
 
