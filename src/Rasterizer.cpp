@@ -1,5 +1,7 @@
 #include "Rasterizer.h"
 
+const std::vector<int> Rasterizer::GAUSSIAN = {1, 2, 1, 2, 4, 2, 1, 2, 1};
+
 void Rasterizer::rasterize()
 {
 	this->canvas = Canvas(scene.height, scene.width);
@@ -56,8 +58,7 @@ void Rasterizer::rasterize()
 	}
 
 	if (antialiasing) {
-		std::vector<int> gaussian = {1, 2, 1, 2, 4, 2, 1, 2, 1};
-		canvas.antialias(gaussian, 3);
+		canvas.antialias(GAUSSIAN, 3);
 	}
 }
 

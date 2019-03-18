@@ -17,6 +17,8 @@ private:
 	Canvas canvas;
 	bool antialiasing;
 
+	static const std::vector<int> GAUSSIAN;
+
 	void load_conf(std::string _f);
 };
 
