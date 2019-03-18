@@ -1,7 +1,21 @@
 # COBRA
 COmmon Bidimentional RAsterizer (COBRA) - A simple 2D rasterizer implemented in C++
 
-## Main features:
+## Table of Contents
++ [1. Main features](#features)
++ [2. Examples](#examples)
++ [3. Build](#build)
++ [4. Run](#run)
++ [5. Scene description](#description)
++ [5.1. Collections](#collections)
++ [5.2. Objects](#objects)
++ [5.2.1. Object types](#obj-types)
++ [5.2.2. Filling](#filling)
++ [5.3. Description example](#desc-example)
++ [6. (Possible) future features](#future)
++ [7. Acknowledgements and licensing](#licensing)
+
+## <a name="features"></a> Main features:
 * [x] Lines, implemented with Bresenham algorithm
 * [x] Circles, implemented with midpoint algorithm
 * [x] Circle arcs
@@ -15,9 +29,9 @@ COmmon Bidimentional RAsterizer (COBRA) - A simple 2D rasterizer implemented in 
     * [x] Arcs
     * [x] Variables (integers, floats)
     
-## Examples
+## <a name="examples"></a> Examples
     
-## Build
+## <a name="build"></a> Build
 After cloning/downloading the repository, and navigating to it, do:
 ```bash
 mkdir bin
@@ -26,7 +40,7 @@ cmake ..
 make
 ```
 
-## Run
+## <a name="run"></a> Run
 
 This command will read the scene description on the specified file, and produce a png image with the specified file name.
 
@@ -34,7 +48,7 @@ This command will read the scene description on the specified file, and produce 
 ./bin/cobra <your scene description file> <your output file name>
 ```
 
-## Scene description
+## <a name="description"></a> Scene description
 
 Scene descriptions are written in YAML. Below is a brief guide on how to do so.
 But first, we define some type descriptors: (I) means integer, (N) non-negative integer, (S) string, and (R) a real number between 0 and 1 (inclusive). [x] stands for the same type as (x), but means the corresponding value is optional. <x, x, ...> stands for a list with elements of type x. An optional list would be represented as [<x, x, ...>].
@@ -44,7 +58,7 @@ The "root" of the description can have the following fields (note that the first
 * width: (N), defines scene width (in pixels)
 * background: [S] or <R, R, R>, defines background color (see *color* below in *collections*)
 
-### Collections
+### <a name="collections"></a> Collections
 After that, we will we go into the *collections*, where you can define and give name to certain values.
 The collections are:
 * colors
@@ -65,14 +79,14 @@ This means that, if we have an arc with values <0.25, 0.75>, we'll have an arc b
 
 Now, a **variable** is defined similarly, but with an additional field: "type", which can have a value of "integer", meaning that its value is an integer; or "float", meaning that its value is a floating-point (or "real") number (bounds are implementation-dependent). When defined as a list, the type must come before name and value. While variables can be used mostly any place a value of that type is expected, note that you can *not* operate on variables (such as a1+a2, or a3-10, or any such expression).
 
-### Objects
+### <a name="objects"></a> Objects
 Now comes the main part of the scene description, where we define all objects in the scene. The "objects" section is a list, where each element is a map, having the following base fields:
 * name: [S], simply names an object (no use as of yet besides readability)
 * type: (S), defines object type (see *types* below)
 * color: [S] or [<R, R, R>], defines the object's (line) color (see *color* above, in *collections*)
 More fields are defines depending on the object's type.
 
-#### Types
+#### <a name="obj-types"></a> Object types
 There are six basic objects, and these are their types and specific fields:
 
 A **line** defines a line between the points "start" and "end" (<N, N> or (S) each, see *point* above, in *collections*)).
@@ -83,7 +97,7 @@ A **circle** is exactly what it sounds like, and is defined by a "radius" (N), a
 An **arc** is similar to a circle, in that it also has center and radius fields. But, it must also have an "arc" field (<R, R> or (S)), defining its arc, or range over the full circle (see *arc* above, in *collections*).
 
 
-#### Filling
+#### <a name="filling"></a> Filling
 Polygons and circles can also be *filled*. There are two methods for filling, scanline and flood fill. Both share these fields:
 * fill: [S], if it has a value of "scanline"
 * fill_color: [S] or <R, R, R>, which defines the color used to fill the object (see *color* above, in *collections*)
@@ -93,7 +107,7 @@ Now, the other method, flood fill, works on all closed shapes, and has a require
 
 Note that if "fill" is not defined, scanline will be assumed, unless "flood_points" is defined. And if "fill_color" is not defined, an implementation-depended default color will be used.
 
-### Description example
+### <a name="desc-example"></a> Description example
 Below is a simple but complete example of a scene description, which produces the image above it.
 ![simple](examples/simple/simple.png)
 
@@ -185,7 +199,7 @@ objects:
     fill_color: mid_gray
 ```
 
-## (Possible) future features:
+## <a name="future"></a> (Possible) future features:
 Besides those unmarked on main features, we could have:
 * Thickness parameter for lines
 * Thickness parameter for other objects
@@ -196,7 +210,7 @@ Besides those unmarked on main features, we could have:
 * String type for variables
 * Expressions involving variables
 
-## Acknowledgements and licensing
+## <a name="licensing"></a> Acknowledgements and licensing
 Two libraries were used in this project and are included in this repository:
 * [STB image writing library](https://github.com/nothings/stb "STB libraries"), a single-file public domain (or MIT licensed) library used here for writing png images.
 * [OpenGL mathematics library](https://glm.g-truc.net "OpenGL Mathematics"), a header only mathematics library for graphics software. Only its vector classes and associated operations are used in this project, for (computational) efficiency. Its source code and documentation are licensed under the [Happy Bunny License (Modified MIT) or the MIT License](external/glm/manual.md#section0)
