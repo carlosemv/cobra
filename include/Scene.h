@@ -23,7 +23,9 @@ public:
 private:
 	Colors palette;
 	std::map<std::string, Point> points;
-	std::map<std::string, Point> arcs;
+	std::map<std::string, Arc> arcs;
+	std::map<std::string, int> int_vars;
+	std::map<std::string, double> float_vars;
 
 	void load_collections(YAML::Node config);
 	void load_fill(YAML::Node& node, Object& obj) const;
@@ -40,6 +42,9 @@ private:
 	Point get_point(YAML::Node node) const;
 	Color get_color(YAML::Node node) const;
 	Arc get_arc(YAML::Node node) const;
+
+	std::optional<int> get_int(YAML::Node node) const;
+	std::optional<double> get_float(YAML::Node node) const;
 
 	static const std::string invalid_value_err(std::string field,
 		std::optional<std::string> obj_name, std::string type_name);
@@ -63,7 +68,7 @@ private:
 
 	template <class T>
 	std::optional<std::pair<std::string, T>> get_element(
-		YAML::Node node, std::string elem_name)
+		YAML::Node node, std::string elem_name, bool has_type=false)
 	{
 		std::string name;
 		T value;
@@ -78,8 +83,8 @@ private:
 				o_name = get_value<std::string>(node, "name");
 				o_value = get_value<T>(node, "value");
 			} else if (node.IsSequence()) {
-				o_name = get_value<std::string>(node, 0);
-				o_value = get_value<T>(node, 1);
+				o_name = get_value<std::string>(node, 0+has_type);
+				o_value = get_value<T>(node, 1+has_type);
 			}
 
 			if (not o_name)
@@ -102,11 +107,11 @@ private:
 
 		if (invalid_name) {
 			std::cerr << elem_name 
-				<< " definition has invalid or missing \"name\";"
+				<< " definition has an invalid or missing name;"
 				<< " ignoring definition.\n";
 		} else if (invalid_value) {
 			std::cerr << elem_name << " \"" << name << "\""
-				<< " has an invalid or missing \"value\";"
+				<< " has an invalid or missing value;"
 				<< " ignoring definition.\n";
 		} else {
 			return make_pair(name, value);

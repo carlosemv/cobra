@@ -19,7 +19,7 @@ Scene::Scene(std::string config_file)
 		if (o_type_name) {
 			type_name = o_type_name.value();
 		} else {
-			std::cerr << "Missing type; ignoring object.\n";
+			std::cerr << "Missing object type; ignoring object.\n";
 			continue;
 		}
 
@@ -144,7 +144,7 @@ std::optional<Object> Scene::make_circle(YAML::Node& node, std::string type_name
 	auto center = get_point(node["center"]);
 	obj = Object(type_name, {center});
 
-	auto radius = get_value<int>(node, "radius");
+	auto radius = get_int(node["radius"]);
 	if (radius) {
 		obj.radius = radius.value();
 	} else {
@@ -171,7 +171,7 @@ std::optional<Object> Scene::make_rect(YAML::Node& node, std::string type_name,
 	auto c = get_point(node["corner"]);
 	int width, height;
 
-	auto o_width = get_value<int>(node, "width");
+	auto o_width = get_int(node["width"]);
 	if (not o_width) {
 		std::cerr << invalid_value_err("width",
 			obj_name, type_name);
@@ -180,7 +180,7 @@ std::optional<Object> Scene::make_rect(YAML::Node& node, std::string type_name,
 		width = o_width.value();
 	}
 
-	auto o_height = get_value<int>(node, "height");
+	auto o_height = get_int(node["height"]);
 	if (not o_height) {
 		std::cerr << invalid_value_err("height",
 			obj_name, type_name);
@@ -202,29 +202,64 @@ std::optional<Object> Scene::make_rect(YAML::Node& node, std::string type_name,
 
 Point Scene::get_point(YAML::Node node) const
 {
-	try {
-		auto value = node.as<ipair_t>();
-		return value;
-	} catch (const YAML::BadConversion& e) {
-		Point point = {0, 0};
+	Point p = {0, 0};
+	if (node.IsSequence()) {
+		for (auto i = 0; i < 2; ++i) {
+			auto o_int = get_int(node[i]);
+			if (o_int) {
+				p[i] = o_int.value();
+			} else {
+				if (node[i]) {
+					std::cerr << "Invalid or unkown value \""
+						<< node[i].as<std::string>() << "\"";
+				} else {
+					std::cerr << "Missing value";
+				}
+				std::cerr << " in position " 
+					<< ((i==0) ? "\"x\"" : "\"y\"")
+					<< " of point; replacing with "
+					<< p[i] << ".\n";
+			}
+		}
+	} else if (node.IsScalar()) {
 		auto name = node.as<std::string>();
 		try {
-			point = points.at(name);
+			p = points.at(name);
 		} catch (const std::out_of_range& e) {
 			std::cerr << "Unkown point " << name
-				<< "; replacing with " << point
+				<< "; replacing with " << p
 				<< "\n";
 		}
-		return point;
+	} else {
+		std::cerr << "Invalid point;"
+		<< " replacing with "<< p << "\n";
 	}
+
+	return p;
 }
 
 Arc Scene::get_arc(YAML::Node node) const
 {
 	Arc arc = {0, 1};
-	try {
-		arc = Arc(node.as<dpair_t>());
-	} catch (const YAML::BadConversion& e) {
+	if (node.IsSequence()) {
+		for (auto i = 0; i < 2; ++i) {
+			auto o_float = get_float(node[i]);
+			if (o_float) {
+				arc[i] = o_float.value();
+			} else {
+				if (node[i]) {
+					std::cerr << "Invalid or unkown value \""
+						<< node[i].as<std::string>() << "\"";
+				} else {
+					std::cerr << "Missing value";
+				}
+				std::cerr << " in position " 
+					<< ((i==0) ? "\"left\"" : "\"right\"")
+					<< " of arc; replacing with "
+					<< arc[i] << ".\n";
+			}
+		}
+	} else if (node.IsScalar()) {
 		auto name = node.as<std::string>();
 		try {
 			arc = arcs.at(name);
@@ -233,6 +268,9 @@ Arc Scene::get_arc(YAML::Node node) const
 				<< "; replacing with " << arc
 				<< "\n";
 		}
+	} else {
+		std::cerr << "Invalid arc;"
+		<< " replacing with "<< arc << "\n";
 	}
 
 	if (arc.x < 0 or arc.x > 1 or arc.y < 0 or arc.y > 1) {
@@ -247,11 +285,28 @@ Arc Scene::get_arc(YAML::Node node) const
 
 Color Scene::get_color(YAML::Node node) const
 {
-	try {
-		auto value = node.as<std::array<double, 3>>();
+	Color c = DEFAULT_LINE;
+	if (node.IsSequence()) {
+		std::array<double, 3> value = {0};
+		for (auto i = 0; i < 3; ++i) {
+			auto o_float = get_float(node[i]);
+			if (o_float) {
+				value[i] = o_float.value();
+			} else {
+				if (node[i]) {
+					std::cerr << "Invalid or unkown value \""
+						<< node[i].as<std::string>() << "\"";
+				} else {
+					std::cerr << "Missing value";
+				}
+				std::cerr << " in position " << i
+					<< " of color; replacing with "
+					<< c[i] << ".\n";
+			}
+		}
+
 		return {value[0], value[1], value[2]};
-	} catch (const YAML::BadConversion& e) {
-		Color c = DEFAULT_LINE;
+	} else if (node.IsScalar()) {
 		auto name = node.as<std::string>();
 		try {
 			c = palette.from_string(name);
@@ -260,8 +315,45 @@ Color Scene::get_color(YAML::Node node) const
 				<< "; replacing with " << c
 				<< "\n";
 		}
+	} else {
+		std::cerr << "Invalid color;"
+			<< " replacing with "<< c << "\n";
+	}
 
-		return c;
+	return c;
+}
+
+std::optional<int> Scene::get_int(YAML::Node node) const
+{
+	if (not node)
+		return std::nullopt;
+	
+	try {
+		return node.as<int>();
+	} catch (const YAML::BadConversion& e) {
+		try {
+			auto name = node.as<std::string>();
+			return int_vars.at(name);
+		} catch (const std::out_of_range& e) {
+			return std::nullopt;
+		}
+	}
+}
+
+std::optional<double> Scene::get_float(YAML::Node node) const
+{
+	if (not node)
+		return std::nullopt;
+
+	try {
+		return node.as<double>();
+	} catch (const YAML::BadConversion& e) {
+		try {
+			auto name = node.as<std::string>();
+			return float_vars.at(name);
+		} catch (const std::out_of_range& e) {
+			return std::nullopt;
+		}
 	}
 }
 
@@ -340,6 +432,42 @@ void Scene::load_collections(YAML::Node config)
 		if (elem) {
 			std::tie(name, value) = elem.value();
 			arcs[name] = Arc(value);
+		}
+	}
+
+	for (auto var : config["variables"]) {
+		std::string type_name;
+
+		if (var.IsSequence()) {
+			type_name = var[0].as<std::string>();
+		} else if (var.IsMap()) {
+			if (var["type"]) {
+				type_name = var["type"].as<std::string>();
+			} else {
+				std::cerr << "variable definition is missing type;"
+					<< " ignoring definition.\n";
+				continue;
+			}
+		} else {
+			continue;
+		}
+
+		if (type_name == "integer") {
+			auto elem = get_element<int>(var, "variable", true);
+			if (elem) {
+				auto [name, value] = elem.value();
+				int_vars[name] = value;
+			}
+		} else if (type_name == "float") {
+			auto elem = get_element<double>(var, "variable", true);
+			if (elem) {
+				auto [name, value] = elem.value();
+				float_vars[name] = value;
+			}
+		} else {
+			std::cerr << "variable definition has an"
+				<< " invalid type \"" << type_name 
+				<< "\"; ignoring definition.\n";
 		}
 	}
 }
